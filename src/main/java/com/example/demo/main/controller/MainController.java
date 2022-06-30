@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.main.controller;
 
 import com.example.demo.component.MailComponents;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ public class MainController {
 
     private final MailComponents mailComponents;
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String index(){
 
         String email = "tjwns999@gmail.com";

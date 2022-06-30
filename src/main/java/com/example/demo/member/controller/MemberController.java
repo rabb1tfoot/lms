@@ -21,6 +21,12 @@ public class MemberController {
 
     private final MemberService memberService;
 
+
+    @RequestMapping(value = "/member/login")
+    public String login(){
+        return "member/login";
+    }
+
     @RequestMapping(value = "/member/register", method = RequestMethod.GET)
     public String register(){
         return "member/register";
@@ -43,6 +49,10 @@ public class MemberController {
         model.addAttribute("result", result);
 
         return "member/email-auth";
+    }
 
+    @GetMapping("member/info")
+    public String memberInfo(){
+        return "member/info";
     }
 }
