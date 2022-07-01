@@ -44,7 +44,7 @@ public class MemberServiceimpl implements MemberService {
                 .userId(parameter.getUserId())
                 .userName(parameter.getUserName())
                 .phoneNumber(parameter.getPhone())
-                .password(parameter.getPassword())
+                .password(encPassword)
                 .regDt(LocalDateTime.now())
                 .isEmailAuth(false)
                 .emailAuthKey(uuid)

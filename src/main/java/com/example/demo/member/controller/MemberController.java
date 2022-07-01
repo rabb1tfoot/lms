@@ -24,9 +24,18 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    @RequestMapping(value = "/member/login")
+    @GetMapping(value = "/member/login")
     public String login(){
         return "member/login";
+    }
+
+    @PostMapping(value = "/member/login")
+    public String loginSubmit(Model model, ResetPasswordInput parameter){
+        try{
+            memberService.loadUserByUsername(parameter.getUserId());
+        }catch (Exception e){
+        }
+        return "index";
     }
 
     @GetMapping("/member/find_password")
@@ -88,7 +97,7 @@ public class MemberController {
 
         boolean result = false;
         try{
-            result =  memberService.resetPassword(parameter.getUserId(), parameter.getPassword());
+            result =  memberService.resetPassword(parameter.getId(), parameter.getPassword());
         }catch (Exception e){
 
         }
