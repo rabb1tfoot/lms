@@ -7,11 +7,11 @@
 <body>
 
     <h1>회원 로그인</h1>
+    <div th:replace="/fragments/layout.html :: fragment-body-main"> </div>
 
-    <div th:text="${errorMessage}">
-    </div>
+    <div th:text="${errorMessage}"></div>
 
-    <from method="post">
+    <form method="post">
         <div>
             <input type="text" name="username" placeholder="아이디(이메일)을 입력해주세요" required/>
         </div>
@@ -21,7 +21,12 @@
         <div>
             <button type="submit">로그인</button>
         </div>
-    </from>
+    </form>
+
+    <div>
+        <a href="/member/find_password">비밀번호 찾기</a>
+    </div>
+
 
 </body>
 </html>

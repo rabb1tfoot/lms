@@ -2,12 +2,14 @@ package com.example.demo.member.controller;
 
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.model.MemberInput;
+import com.example.demo.member.model.ResetPasswordInput;
 import com.example.demo.member.repository.MemberRepository;
 import com.example.demo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -25,6 +27,23 @@ public class MemberController {
     @RequestMapping(value = "/member/login")
     public String login(){
         return "member/login";
+    }
+
+    @GetMapping("/member/find_password")
+    public String findPassword(){
+        return "member/find_password";
+    }
+
+    @PostMapping("/member/find_password")
+    public String findPasswordSubmit(Model model, ResetPasswordInput parameter){
+
+        boolean result = false;
+        try{
+            result = memberService.sendResetPassword(parameter);
+            model.addAttribute("result", result);
+        }catch (Exception e){
+        }
+        return "member/find_password_result";
     }
 
     @RequestMapping(value = "/member/register", method = RequestMethod.GET)
@@ -49,6 +68,33 @@ public class MemberController {
         model.addAttribute("result", result);
 
         return "member/email-auth";
+    }
+
+    @GetMapping("/member/reset_password")
+    public String resetPassword(Model model, HttpServletRequest request){
+
+        String uuid = request.getParameter("id");
+        model.addAttribute("uuid", uuid);
+
+        boolean result = memberService.checkResetPassword(uuid);
+
+        model.addAttribute("result", result);
+
+        return "member/reset_password";
+    }
+
+    @PostMapping("/member/reset_password")
+    public String resetPasswordSubmit(Model model, ResetPasswordInput parameter){
+
+        boolean result = false;
+        try{
+            result =  memberService.resetPassword(parameter.getUserId(), parameter.getPassword());
+        }catch (Exception e){
+
+        }
+
+        model.addAttribute("result", result);
+        return "member/reset_password_result";
     }
 
     @GetMapping("member/info")

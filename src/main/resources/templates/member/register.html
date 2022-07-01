@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -9,6 +9,7 @@
 </head>
 <body>
     <h1>회원 가입</h1>
+    <div th:replace="/fragments/layout.html :: fragment-body-main"> </div>
 
     <form method="post">
         <div>
