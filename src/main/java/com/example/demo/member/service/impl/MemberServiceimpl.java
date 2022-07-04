@@ -1,8 +1,12 @@
 package com.example.demo.member.service.impl;
 
+import com.example.demo.admin.dto.MemberDto;
+import com.example.demo.admin.mapper.MemberMapper;
+import com.example.demo.admin.model.MemberParam;
 import com.example.demo.component.MailComponents;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.exception.MemberNotEamilAuthException;
+import com.example.demo.member.exception.MemberStopUser;
 import com.example.demo.member.model.MemberInput;
 import com.example.demo.member.model.ResetPasswordInput;
 import com.example.demo.member.repository.MemberRepository;
@@ -15,7 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +34,7 @@ public class MemberServiceimpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MailComponents mailComponents;
+    private final MemberMapper memberMapper;
 
     @Override
     public boolean register(MemberInput parameter) {
@@ -48,6 +55,7 @@ public class MemberServiceimpl implements MemberService {
                 .regDt(LocalDateTime.now())
                 .isEmailAuth(false)
                 .emailAuthKey(uuid)
+                .userStatus(Member.MEMBER_STATUS_REQ)
                 .build();
         memberRepository.save(member);
 
@@ -76,6 +84,7 @@ public class MemberServiceimpl implements MemberService {
             return false;
         }
 
+        member.setUserStatus(Member.MEMBER_STATUS_ING);
         member.setEmailAuth(true);
         member.setEmailAuthDt(LocalDateTime.now());
         memberRepository.save(member);
@@ -95,8 +104,12 @@ public class MemberServiceimpl implements MemberService {
         Member member = optionalMember.get();
 
         if(!member.isEmailAuth()){
-            throw  new MemberNotEamilAuthException("이메일 활성화 이후 로그인해주세요.")
-;        }
+            throw  new MemberNotEamilAuthException("이메일 활성화 이후 로그인해주세요.");
+        }
+
+        if(Member.MEMBER_STATUS_STOP.equals(member.getUserStatus())){
+            throw  new MemberStopUser("정지된 회원 입니다.");
+        }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
@@ -182,6 +195,65 @@ public class MemberServiceimpl implements MemberService {
             throw new RuntimeException("유효한 날짜가 아닙니다.");
         }
 
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public List<MemberDto> list(MemberParam param) {
+        List<MemberDto> list = memberMapper.selectList(param);
+        long totalCount = memberMapper.selectListCount(param);
+
+        if(!CollectionUtils.isEmpty(list)){
+            int i = 0;
+            for(MemberDto x : list){
+                x.setTotalCount(totalCount);
+                x.setSeq(totalCount - (totalCount - param.getPageStart() - i) + 1); //x.setSeq(totalCount - param.getPageStart() - i);
+                i++;
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public MemberDto detail(String userId) {
+
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+
+        if(!optionalMember.isPresent()){
+            return null;
+        }
+        Member member = optionalMember.get();
+        return MemberDto.of(member);
+    }
+
+    @Override
+    public boolean updateStatus(String userId, String userStatus) {
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+
+        if(!optionalMember.isPresent()){
+            throw new UsernameNotFoundException("회원정보가 없습니다.");
+        }
+
+        Member member = optionalMember.get();
+        member.setUserStatus(userStatus);
+        memberRepository.save(member);
+        return true;
+    }
+
+    @Override
+    public boolean updatePassword(String userId, String password) {
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+
+        if(!optionalMember.isPresent()){
+            throw new UsernameNotFoundException("회원정보가 없습니다.");
+        }
+
+        String encPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        Member member = optionalMember.get();
+        member.setPassword(encPassword);
+        memberRepository.save(member);
         return true;
     }
 }
