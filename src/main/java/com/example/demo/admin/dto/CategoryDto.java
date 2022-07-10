@@ -16,10 +16,11 @@ import java.util.List;
 public class CategoryDto {
 
     Long id;
-
     String categoryName;
     int sortValue;
     boolean usingYN;
+
+    int courseCount;
 
     public static List<CategoryDto> of (List<Category> categories){
         if(categories != null){

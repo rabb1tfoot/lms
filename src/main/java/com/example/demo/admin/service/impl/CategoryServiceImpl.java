@@ -2,6 +2,7 @@ package com.example.demo.admin.service.impl;
 
 import com.example.demo.admin.dto.CategoryDto;
 import com.example.demo.admin.entity.Category;
+import com.example.demo.admin.mapper.CategoryMapper;
 import com.example.demo.admin.model.CategoryInput;
 import com.example.demo.admin.repository.CategoryRepository;
 import com.example.demo.admin.service.CategoryService;
@@ -15,11 +16,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     private Sort getSortBySortValueDesc(){
         return Sort.by(Sort.Direction.DESC, "sortValue");
@@ -73,5 +75,11 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
         return true;
 
+    }
+
+    @Override
+    public List<CategoryDto> frontList(CategoryDto categoryDto) {
+
+        return categoryMapper.selectList(categoryDto);
     }
 }

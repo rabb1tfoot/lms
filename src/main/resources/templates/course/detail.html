@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>강좌 정보</title>
+    <style>
+        span.price{
+            text-decoration: line-through;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        $(function(){
+            
+            $('#submitForm').on('submit', function(){
+
+                if(!confirm('수강 신청을 하시겠습니까?')){
+                    return false;
+                }
+
+                var $thisForm = $(this);
+                var url = '/api/course/req.api';
+                var parameter = {
+                    courseId : $thisForm.find('input[name=id]').val()
+                };
+                axios.post(url, parameter).then(function(Response){
+
+                    console.log(Response);
+
+                    response.data = Response.data || {};
+                    response.data.header = response.data.header || {};
+
+                    if(response.data.header.result){
+                        alert(response.data.header.message);
+                        return false;
+                    }
+
+                    alert('강좌가 정상적으로 신청되었습니다.');
+                    location.href = '/';
+
+                }).catch(function(err){
+                    console.log(error);
+                });
+
+                return false;
+            });
+
+        });
+    </script>
+</head>
+<body>
+<h1>강좌 상세 페이지</h1>
+<div th:replace="/fragments/layout.html :: fragment-admin-main"> </div>
+
+<div>
+    <h2>
+    강좌명: <span th:text="${detail.subject}"></span>
+    <div th:utext="${detail.contents}"></div>
+    <div>
+        <p>가격 : <span th:text="${detail.price}"></span></p>
+        <p>할인가격 : <span th:text="${detail.salePrice}"></span></p>
+    </div>
+
+    <div>
+        <form id="submitForm" method="post">
+            <input type="hidden" name="id" th:value="${detail.id}"/>
+            <button type="submit">수강 신청하기</button>
+        </form>
+        <a href="/course">강좌목록</a>
+    </div>
+
+    </h2>
+</div>
+
+</body>
+</html>

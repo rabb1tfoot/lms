@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mymatix.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.admin.mapper.CategoryMapper">
+
+    <select id="selectList"
+            resultType="com.example.demo.admin.dto.CategoryDto">
+
+        select c.*
+        , (select count(*) from course where category_id = c.id) as course_count
+        from category c
+        where usingyn = 1
+        order by sort_value desc;
+
+    </select>
+</mapper>

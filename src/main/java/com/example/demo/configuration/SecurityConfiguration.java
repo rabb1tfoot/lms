@@ -52,6 +52,7 @@ public class SecurityConfiguration{
                 .logoutUrl("/member/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true);
+        http.headers().frameOptions().sameOrigin();
         http.httpBasic();
         return http.build();
     }

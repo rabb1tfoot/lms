@@ -59,7 +59,7 @@
     </script>
 </head>
 <body>
-<h1>관리자 회원 관리</h1>
+<h1>카테고리 관리</h1>
 <div th:replace="/fragments/layout.html :: fragment-admin-main"> </div>
 <br/>
 <hr/>
@@ -85,9 +85,10 @@
             </thead>
             <tbody>
                 <tr th:each="x : ${list}">
-                    <td th:text="${x.id}"></td>
-                    <input type="hidden" name="id" th:value="${x.id}"/>
-                    <p th:text="${x.id}"></p>
+                    <td>
+                        <input type="hidden" name="id" th:value="${x.id}"/>
+                        <p th:text="${x.id}"></p>
+                    </td>
                     <td>
                         <input th:value="${x.categoryName}" type="text" name="categoryName"/>
                     </td>

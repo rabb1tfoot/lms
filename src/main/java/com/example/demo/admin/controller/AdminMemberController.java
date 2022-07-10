@@ -3,6 +3,7 @@ package com.example.demo.admin.controller;
 import com.example.demo.admin.dto.MemberDto;
 import com.example.demo.admin.model.MemberParam;
 import com.example.demo.admin.model.MemberInput;
+import com.example.demo.course.controller.BaseController;
 import com.example.demo.member.service.MemberService;
 import com.example.demo.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-public class AdminMemberController {
+public class AdminMemberController extends BaseController {
 
     private final MemberService memberService;
 
@@ -31,11 +32,12 @@ public class AdminMemberController {
         }
 
         String queryString = parameter.getQueryString();
-        PageUtil pageUtilList = new PageUtil(totalCount, parameter.getPageSize(), parameter.getPageIndex(), queryString);
+        String pagerHtml = super.getPaperHtml(totalCount, parameter.getPageSize()
+                , parameter.getPageIndex(), queryString);
 
         model.addAttribute("list", members);
-        model.addAttribute("pager", pageUtilList.pager());
         model.addAttribute("totalCount", totalCount);
+        model.addAttribute("pager", pagerHtml);
 
         return "admin/member/list";
     }

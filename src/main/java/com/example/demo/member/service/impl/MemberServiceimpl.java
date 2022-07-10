@@ -50,7 +50,7 @@ public class MemberServiceimpl implements MemberService {
         Member member = Member.builder()
                 .userId(parameter.getUserId())
                 .userName(parameter.getUserName())
-                .phoneNumber(parameter.getPhone())
+                .phoneNumber(parameter.getPhoneNumber())
                 .password(encPassword)
                 .regDt(LocalDateTime.now())
                 .isEmailAuth(false)
